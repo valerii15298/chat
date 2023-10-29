@@ -1,0 +1,35 @@
+[package]
+name = "chat-server"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+serde_json = { version = "*" }
+axum = { version = "0.6", features = [
+    "headers",
+    "http1",
+    "http2",
+    "json",
+    "macros",
+    "matched-path",
+    "multipart",
+    "original-uri",
+    "tokio",
+    "tower-log",
+    "tracing",
+    "ws",
+    "form",
+    "query",
+] }
+futures = "0.3"
+futures-util = { version = "0.3", default-features = false, features = [
+    "sink",
+    "std",
+] }
+serde = { version = "*", features = ["derive"] }
+headers = "0.3"
+tokio = { version = "1.0", features = ["full"] }
+tower = { version = "0.4", features = ["util"] }
+tower-http = { version = "0.4.0", features = ["fs", "trace", "cors"] }
