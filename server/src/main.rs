@@ -107,10 +107,11 @@ async fn main() {
         .route("/:user_id", get(websocket_handler))
         .with_state(app_state.clone());
 
+    let api_routes = Router::new().merge(authorized_routes).merge(public_routes);
+
     let app = Router::new()
         .nest_service("/chat", serve_dir.clone())
-        .merge(authorized_routes)
-        .merge(public_routes)
+        .nest("/api", api_routes)
         .layer(
             CorsLayer::new()
                 .allow_origin(Any)

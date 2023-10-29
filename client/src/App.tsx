@@ -4,6 +4,9 @@ import { createStore } from "solid-js/store";
 const user_id_parsed = parseInt(localStorage.getItem("user_id")!);
 const user_id = (!isNaN(user_id_parsed) && typeof user_id_parsed === "number") ? user_id_parsed : null;
 
+const webSocketProtocol = location.protocol === 'https:' ? "wss" : "ws";
+
+const origin = import.meta.env.DEV ? "localhost:3005" : window.location.host;
 const App: Component = () => {
   const [username, setUsername] = createSignal("");
 
@@ -18,7 +21,7 @@ const App: Component = () => {
           e.preventDefault();
           const user_name = username();
           if (!user_name.length || user_name.includes('\n')) return;
-          fetch(`http://127.0.0.1:3005/register/${user_name}`, {
+          fetch(`/api/register/${user_name}`, {
             method: "POST", headers: {
               Authorization: `Bearer ${userId()}`
             }
@@ -61,7 +64,7 @@ const Chat: Component<{ user_id: number }> = ({ user_id }) => {
   const [newRoomName, setNewRoomName] = createSignal<string>("");
   const [msg, setMsg] = createSignal<string>("");
   async function refreshRooms() {
-    await fetch('http://127.0.0.1:3005/rooms', {
+    await fetch('/api/rooms', {
       headers: {
         Authorization: `Bearer ${user_id}`
       }
@@ -70,7 +73,7 @@ const Chat: Component<{ user_id: number }> = ({ user_id }) => {
     });
   }
   async function refreshUsers() {
-    await fetch('http://127.0.0.1:3005/users', {
+    await fetch('/api/users', {
       headers: {
         Authorization: `Bearer ${user_id}`
       }
@@ -82,7 +85,7 @@ const Chat: Component<{ user_id: number }> = ({ user_id }) => {
     await refreshRooms();
     await refreshUsers();
 
-    ws = new WebSocket(`ws://127.0.0.1:3005/${user_id}`);
+    ws = new WebSocket(`${webSocketProtocol}://${origin}/api/${user_id}`);
     ws.onopen = function () {
       console.log("connection opened");
       setWsIsReady(true);
@@ -111,7 +114,7 @@ const Chat: Component<{ user_id: number }> = ({ user_id }) => {
     {Object.values(store.rooms).map(r => <button onClick={() => setSelectedRoom(r.name)}>{r.name}</button>)}
     <label>New room name: <input value={newRoomName()} onInput={e => setNewRoomName(e.target.value)} type="text" /></label>
     <button onClick={async () => {
-      await fetch(`http://127.0.0.1:3005/rooms/${newRoomName()}`, {
+      await fetch(`/api/rooms/${newRoomName()}`, {
         headers: {
           Authorization: `Bearer ${user_id}`,
         },
