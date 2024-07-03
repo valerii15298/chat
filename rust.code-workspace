@@ -15,7 +15,8 @@
       "eamodio.gitlens",
       "shyykoserhiy.git-autoconfig",
       "humao.rest-client",
-      "jock.svg"
+      "jock.svg",
+      "rust-lang.rust-analyzer"
     ],
   },
   "settings": {
